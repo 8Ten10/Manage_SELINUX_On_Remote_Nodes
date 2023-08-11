@@ -1,0 +1,31 @@
+---
+- name: find files
+  hosts: monitor 
+  tasks:
+    - name: Install httpd
+      dnf:
+        name: httpd
+        state: latest
+    - name: find
+      find:
+        path: /
+        recurse: no
+        file_type: directory
+        patterns: 'etc, var'
+      register: find
+    - name: debuggin
+      lineinfile:
+        path: /etc/httpd/conf/httpd.conf
+        regexp: '^DocumentRoot'
+        line: DocumentRoot "/taco"
+
+    - name: debuggin
+      lineinfile:
+        path: /etc/httpd/conf/httpd.conf
+        regexp: '^<Directory "/solo">'
+        line: '<Directory "/taco">'
+    - name: restart httpd
+      service:
+        name: httpd
+        state: restarted
+      ignore_errors: true
